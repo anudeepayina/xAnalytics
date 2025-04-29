@@ -4,9 +4,10 @@ def feature_engineering(mode='development'):
     from preprocessing import preprocessing
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import StandardScaler
+
     
     cols = [
-        'Bat Score'
+        'wicket'
         , 'Pitch X Bins'
         , 'Pitch Y Bins'
         , 'Ball Speed'
@@ -20,9 +21,9 @@ def feature_engineering(mode='development'):
         # , 'wicket_last_six_deliveries'
         # , 'running_wickets'
         # , 'running_total'
-        # , 'Bounce Angle'
+        , 'Bounce Angle'
         , 'Match Id'
-        , 'Bounce Angle Delta'
+        # , 'Bounce Angle Delta'
         # , 'Drop Angle'
         # , 'Bowler Style'
         # , 'Bowler Hand'
@@ -34,7 +35,6 @@ def feature_engineering(mode='development'):
         # , 'dot_balls_last_9_balls'
         # , 'dot_balls_last_12_balls'
         , 'Ball In Over'
-        # , 'deliveries_since_last_wicket'
         , 'Power Play'
     ]
     
@@ -56,11 +56,57 @@ def feature_engineering(mode='development'):
     #     ]
     # )
 
-    df = df.drop_duplicates().reset_index(drop=True)
+#     cols_to_standardize = [
+#     'Pitch X'
+#     , 'Pitch Y'
+#     , 'Ball Speed'
+#     , 'At Stumps X'
+#     , 'At Stumps Y'
+#     , 'Movement In Air'
+#     , 'Movement Off Pitch'
+#     # , 'Bounce Angle'
+#     # , 'Bounce Angle Delta'
+#     # , 'Drop Angle'
+# ]
     
-    train, test = train_test_split(df, train_size=0.8, random_state=123)
+
+    # scaler = StandardScaler()
+    # df_transformed = scaler.fit_transform(df[cols_to_standardize])
+    # df.drop(columns=cols_to_standardize,inplace=True)
+    # df[cols_to_standardize] = df_transformed
+
+    # df['Over'] = df['Over'].apply(lambda x: (x-0)/(20-0))
+
+    df.fillna(0,inplace=True)
+
+    train, test = train_test_split(df, train_size=0.8, random_state=123, stratify=df['wicket'])
+
+    # def smote_func(smote, train):
+    #     x_train_smote, y_train_smote = smote.fit_resample(train.drop('wicket',axis=1),train['wicket'])
+    #     x_train_smote['wicket'] = y_train_smote
+    #     train = x_train_smote
+    #     return train
+
+    # if sampling == 'SMOTE':
+    #     smote = SMOTE(random_state=123)
+    #     train = smote_func(smote, train)
+    # elif sampling == 'ADASYN':
+    #     smote = ADASYN(random_state=123)
+    #     train = smote_func(smote, train)
+    # elif sampling == 'SMOTETomek':
+    #     smote = SMOTETomek(random_state=123)
+    #     train = smote_func(smote, train)
+    # elif sampling == 'SMOTEENN':
+    #     smote = SMOTEENN(random_state=123)
+    #     train = smote_func(smote, train)
+    # elif sampling == 'Under':
+    #     smote = RandomUnderSampler(sampling_strategy='majority', random_state=42)
+    #     train = smote_func(smote, train)
+    # else:
+    #     pass
 
     if mode == 'development':
         return train, test
     else:
         return df
+    

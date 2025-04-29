@@ -1,4 +1,4 @@
-# xR Model #
+# xW Model #
 def preprocessing(cols, mode='development'):
     import pandas as pd
     import numpy as np
@@ -50,7 +50,6 @@ def preprocessing(cols, mode='development'):
     df['run_rate'] = df.apply(
     lambda x: x['running_total'] if np.isinf(x['run_rate']) else x['run_rate'], axis=1
 )
-    
     # Rolling calculations for the last 6, 9, and 12 deliveries
     for window in [6, 9, 12]:
         df[f'runs_last_{window}_balls'] = (
@@ -87,6 +86,8 @@ def preprocessing(cols, mode='development'):
     df['Pitch Y Bins'] = pd.cut(df['Pitch Y'], pitch_y_buckets, labels=range(len(pitch_y_buckets)-1))
     df['At Stumps X Bins'] = pd.cut(df['At Stumps X'], at_stumps_x_buckets, labels=range(len(at_stumps_x_buckets)-1))
     df['At Stumps Y Bins'] = pd.cut(df['At Stumps Y'], at_stumps_y_buckets, labels=range(len(at_stumps_y_buckets)-1))
+
+    print('at the end of the preprocessing stage the shape is ', df.shape,' ', mode)
     
     if mode == 'development':
         df = df.loc[
@@ -115,6 +116,8 @@ def preprocessing(cols, mode='development'):
     else:
         pass
 
+    print('at the end of the preprocessing stage the shape is ', df.shape)
+
     for col in ['Pitch X Bins', 'Pitch Y Bins', 'At Stumps X Bins', 'At Stumps Y Bins']:
         try:
             df[col] = df[col].astype(float)
@@ -122,6 +125,8 @@ def preprocessing(cols, mode='development'):
             print(col)
     
     df = df[cols]
+
+    print(df.isnull().sum())
 
     df = df.dropna().reset_index(drop=True)
     
